@@ -1,34 +1,16 @@
 require('dotenv').config(); /* (подключаем документ .env с токеном) */
 const TelegramApi = require("node-telegram-bot-api"); /* (модуль для работы с телеграмом) */
+const {gameOptions, againOptions} = require("./options");
 
 const bot = new TelegramApi(process.env.TOKEN, {polling: true}); /* (создаем бота, передаем токен доступа и опцию polling(? регулярно отправляет запрос)) */
 
 const chats = {}; /* (для результатов игры) */
 
-const gameOptions = {
-    reply_markup: JSON.stringify({
-        inline_keyboard: [
-            [{text: "1", callback_data: "1"}, {text: "2", callback_data: "2"}, {text: "3", callback_data: "3"}],
-            [{text: "4", callback_data: "4"}, {text: "5", callback_data: "5"}, {text: "6", callback_data: "6"}],
-            [{text: "7", callback_data: "7"}, {text: "8", callback_data: "8"}, {text: "9", callback_data: "9"}],
-            [{text: "0", callback_data: "0"}]
-        ]
-    })
-} /* (обьект для вывода клавиатуры, поле text будет показано на экране, поле callback_data вернется в сообщении при нажатии на эту кнопку, используем слушатель события callback_query) */
-
-const againOptions = {
-    reply_markup: JSON.stringify({
-        inline_keyboard: [
-            [{text: "Играть еще раз", callback_data: "/again"}]
-        ]
-    })
-} /* (обьект для вывода кнопки "Играть еще раз", поле text будет показано на экране, поле callback_data вернется в сообщении при нажатии на эту кнопку, используем слушатель события callback_query) */
-
 const startGame = async (chatId) => {
     await bot.sendMessage(chatId, "Сейчас я загадаю число от 0 до 9, попробуй его угадать"); /* (сообщение для пользователя) */
     const randomNumber = Math.floor(Math.random() * 10); /* (генерируем случайное число) */
     chats[chatId] = randomNumber; /* (помещаем в обьект для результатов) */
-    await bot.sendMessage(chatId, "Отгадывай!", gameOptions); /* (третьим параметром добавляем опции, в д.с это json-обьект reply_markup, который выведет данные - клавиатуру) */
+    await bot.sendMessage(chatId, "Отгадывай!", gameOptions); /* (третьим параметром добавляем опции, в д.с это json-обьект reply_markup из документа options, который выведет данные - клавиатуру) */
 }
 
 const start = () => {
@@ -47,7 +29,7 @@ const start = () => {
     
         /* (варианты ответов на запросы(на текст из сообщений)) */
         if (text === '/start') {
-            await bot.sendSticker(chatId, `https://data.chpic.su/stickers/p/PickleAga/PickleAga_037.webm`); /* (встраиваем картинку приветствия) */
+            await bot.sendSticker(chatId, `assets/free-icon-hello-5578899-Freepik.png`); /* (встраиваем картинку приветствия) */
             return bot.sendMessage(chatId, "Добро пожаловать в тест-чат от Sinzem");
         }
         if (text === '/info') {
